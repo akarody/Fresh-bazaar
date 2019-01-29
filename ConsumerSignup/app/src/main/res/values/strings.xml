@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Consumer Signup</string>
+    <string name="user_name" >Name</string>
+    <string name="email">E-mail</string>
+    <string name="phone">Phone Number</string>
+    <string name="address">Address</string>
+    <string name="pw">Password</string>
+    <string name="cpass">Confirm Password</string>
+    <string name="signup">Sign Up</string>
+</resources>
