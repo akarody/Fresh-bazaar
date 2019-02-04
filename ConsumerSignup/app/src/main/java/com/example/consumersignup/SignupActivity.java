@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 
 public class SignupActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;
@@ -36,14 +38,7 @@ public class SignupActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.email);
         inputPassword = findViewById(R.id.password);
         progressBar = findViewById(R.id.progressBar);
-        Button btnResetPassword = findViewById(R.id.btn_reset_password);
 
-        btnResetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SignupActivity.this, ResetPasswordActivity.class));
-            }
-        });
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,17 +75,27 @@ public class SignupActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
 
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-//                                Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
-                                if (!task.isSuccessful()) {
+                                if (task.isSuccessful()) {
+                                    Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()){
+                                                Toast.makeText(SignupActivity.this,"Registration Complete. Check your email for verification.",Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(SignupActivity.this, MainActivity.class));     //LINK HOME PAGE HERE
+                                                finish();
+                                            }else {
+                                                Toast.makeText(SignupActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                                else {
                                     Toast.makeText(SignupActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                                    finish();
+
                                 }
                             }
                         });
@@ -104,3 +109,4 @@ public class SignupActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
     }
 }
+
